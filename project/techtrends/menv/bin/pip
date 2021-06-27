@@ -1,0 +1,11 @@
+#!/Users/arkadia/Workspace/courses/cloud-native-application-architecture/projects/course1/techTrends-project/nd064_course_1/project/techtrends/menv/bin/python3.6
+
+# -*- coding: utf-8 -*-
+import re
+import sys
+
+from pip._internal import main
+
+if __name__ == '__main__':
+    sys.argv[0] = re.sub(r'(-script\.pyw?|\.exe)?$', '', sys.argv[0])
+    sys.exit(main())
