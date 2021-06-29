@@ -12,13 +12,18 @@ num_db_connections = 0
 
 # Function to get a database connection.
 # This function connects to database with the name `database.db`
-def get_db_connection():
+def get_db_connection(monitorized=True):
+    """
+    @param monitorized, helps to avoid counting connections when the method invocations comes from metrics, 
+    tools or internal method that could not be considered as user's request.
+    """
     connection = sqlite3.connect('database.db')
     connection.row_factory = sqlite3.Row
 
      # Increment the number of database connections
-    global num_db_connections
-    num_db_connections += 1
+    if monitorized:
+        global num_db_connections
+        num_db_connections += 1
 
     return connection
 
@@ -110,7 +115,7 @@ def healthz():
 # Define the metrics endpoint
 @app.route('/metrics')
 def metrics():
-    connection = get_db_connection()
+    connection = get_db_connection(monitorized=False)
     posts_count = connection.execute('SELECT * FROM posts').fetchall()
     connection.close()
     response = app.response_class(
