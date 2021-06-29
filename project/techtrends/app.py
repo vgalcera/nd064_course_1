@@ -2,7 +2,12 @@ import sqlite3
 
 from flask import Flask, jsonify, json, render_template, request, url_for, redirect, flash
 import logging
+import sys
 from werkzeug.exceptions import abort
+
+
+# Number of database connections
+num_db_connections = 0
 
 
 # Function to get a database connection.
@@ -10,11 +15,12 @@ from werkzeug.exceptions import abort
 def get_db_connection():
     connection = sqlite3.connect('database.db')
     connection.row_factory = sqlite3.Row
+
+     # Increment the number of database connections
+    global num_db_connections
+    num_db_connections += 1
+
     return connection
-
-
-# Number of database connections
-num_db_connections = 0
 
 
 # Function to get a post using its ID
@@ -23,10 +29,6 @@ def get_post(post_id):
     post = connection.execute('SELECT * FROM posts WHERE id = ?',
                               (post_id,)).fetchone()
     connection.close()
-
-    # Increment the number of database connections
-    global num_db_connections
-    num_db_connections += 1
 
     return post
 
@@ -42,10 +44,6 @@ def index():
     connection = get_db_connection()
     posts = connection.execute('SELECT * FROM posts').fetchall()
     connection.close()
-
-    # Increment the number of database connections
-    global num_db_connections
-    num_db_connections += 1
 
     return render_template('index.html', posts=posts)
 
@@ -127,6 +125,13 @@ def metrics():
 # start the application on port 3111
 if __name__ == "__main__":
     # Configure logging
+    logger = logging.getLogger("__name__")
     logging.basicConfig(format='%(levelname)s: %(asctime)s, %(message)s', level=logging.DEBUG)
+    h1 = logging.StreamHandler(sys.stdout)
+    h1.setLevel(logging.DEBUG)
+    h2 = logging.StreamHandler(sys.stderr)
+    h2.setLevel(logging.ERROR)
+    logger.addHandler(h1)
+    logger.addHandler(h2)
 
     app.run(host='0.0.0.0', port='3111')
