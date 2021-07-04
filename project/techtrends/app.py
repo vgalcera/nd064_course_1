@@ -14,7 +14,7 @@ num_db_connections = 0
 # This function connects to database with the name `database.db`
 def get_db_connection(monitorized=True):
     """
-    @param monitorized, helps to avoid counting connections when the method invocations comes from metrics, 
+    :param boolean monitorized: helps to avoid counting connections when the method invocations comes from metrics, 
     tools or internal method that could not be considered as user's request.
     """
     connection = sqlite3.connect('database.db')
@@ -93,7 +93,7 @@ def create():
             connection.close()
 
             # log line
-            app.logger.info('New article "' + title + '" posted!!')
+            app.logger.info('New article "' + title + '" posted!')
 
             return redirect(url_for('index'))
 
