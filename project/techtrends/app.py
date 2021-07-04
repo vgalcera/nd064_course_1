@@ -93,7 +93,7 @@ def create():
             connection.close()
 
             # log line
-            app.logger.info('New article "' + title + '" posted!')
+            app.logger.info('New article "' + title + '" posted!!')
 
             return redirect(url_for('index'))
 
